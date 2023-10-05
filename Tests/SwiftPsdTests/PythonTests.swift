@@ -35,8 +35,13 @@ final class PythonTests: XCTestCase {
 	}
 	
 	func testGetDocData() throws {
-		let result = PsdUtils.shared.getPsdData(psdFile: testPsd.path)
+		let result = PsdUtils.shared.getLayerData(psdFile: testPsd.path)
 		print(result)
+	}
+	
+	func testFindPhotoshop() throws {
+		let list = Dependency().findPhotoshop()
+		XCTAssertTrue(list.count != 0)
 	}
 	
 

@@ -9,17 +9,17 @@ import Foundation
 
 class Dependency {
 	
-	init() {
-		do {
-			try Dependency().check()
-		} catch DependencyError.NoPipInstalled {
-			print("Error: Pip not installed.")
-		} catch DependencyError.NoPsdToolInstalled {
-			print("Error: Psd Tool not installed.")
-		} catch {
-			print("Error: \(error)")
-		}
-	}
+//	init() {
+//		do {
+//			try Dependency().check()
+//		} catch DependencyError.NoPipInstalled {
+//			print("Error: Pip not installed.")
+//		} catch DependencyError.NoPsdToolInstalled {
+//			print("Error: Psd Tool not installed.")
+//		} catch {
+//			print("Error: \(error)")
+//		}
+//	}
 	
 	func check() throws {
 		let pipInstalled = checkPip()
@@ -46,6 +46,12 @@ class Dependency {
 			return true
 		}
 		return false
+	}
+	
+	func findPhotoshop() -> [String] {
+		let result = try! ScriptUtils.runShell(command: "mdfind -name 'Photoshop' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications")
+		let list = result.components(separatedBy: "\n").filter({$0.isEmpty == false && $0.components(separatedBy: "/").last!.contains("Photoshop") && $0.components(separatedBy: "/").last!.contains(".app")})
+		return list
 	}
 	
 }
