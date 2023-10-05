@@ -7,6 +7,8 @@ let package = Package(
     name: "SwiftPsd",
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.2.0"),
+		.package(url: "https://github.com/pvieito/PythonKit.git", .branch("master")),
+
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -14,8 +16,12 @@ let package = Package(
         .executableTarget(
             name: "SwiftPsd",
             dependencies: [
-                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser"), "PythonKit"
             ]
         ),
+		.testTarget(
+			name: "SwiftPsdTests",
+			dependencies: ["SwiftPsd", "PythonKit"],
+			resources: [.process("Resources")])
     ]
 )
