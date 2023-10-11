@@ -8,37 +8,27 @@
 import Foundation
 
 class Dependency {
+
 	
-	init() {
-//		do {
-//			try Dependency().check()
-//		} catch DependencyError.NoPipInstalled {
-//			print("Error: Pip not installed.")
-//		} catch DependencyError.NoPsdToolInstalled {
-//			print("Error: Psd Tool not installed.")
-//		} catch {
-//			print("Error: \(error)")
-//		}
-        check()
-	}
-	
-	func check()  {
+	func check() -> [String]  {
 		let pipInstalled = checkPip()
         let psdToolInstalled = checkPsdTool()
-//        let appScriptInstalled = checkAppscript()
-		let psList = findPhotoshops()
+        var errorList: [String] = []
+        let psList = findPhotoshops()
 		if pipInstalled == false {
 			print("Error: Cannot find pip installed.")
+            errorList.append("Error: Cannot find pip installed.")
 		}
 		if psdToolInstalled == false {
             print("Error: Cannot find psd tool python package installed.")
+            errorList.append("Error: Cannot find psd tool python package installed.")
 		}
-//        if appScriptInstalled == false {
-//            print("Error: Cannot find appScript python package installed.")
-//        }
+
         if psList.count == 0 {
             print("Warning: No Photoshop installed, some functions cannot be used.")
+            errorList.append("Warning: No Photoshop installed, some functions cannot be used.")
          }
+        return errorList
 	}
 
 	private func checkPip() -> Bool {
@@ -49,14 +39,6 @@ class Dependency {
 		return true
 	}
 
-//    private func checkAppscript() -> Bool {
-//        let result = try! ScriptUtils.runShell(command: "pip list")
-//        if result.contains("appscript") {
-//            return true
-//        }
-//        return false
-//    }
-	
 	private func checkPsdTool() -> Bool {
 		let result = try! ScriptUtils.runShell(command: "pip list")
 		if result.contains("psd-tools") {

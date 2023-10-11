@@ -27,9 +27,6 @@ class PsdUtils {
 
 	
     func setTextContent(psdIndexContentDict: [String: [Int: String]]) {
-//        let pathList = psdIndexContentDict.keys
-//        let startEditedTimeList = pathList.map({FileUtils.getDirectoryEditedTime(path: $0)})
-
         var dictList: [String] = []
         for path in psdIndexContentDict.keys {
             if let layerStrDict = psdIndexContentDict[path] {
