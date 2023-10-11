@@ -40,9 +40,16 @@ final class PythonTests: XCTestCase {
 	}
 	
 	func testFindPhotoshop() throws {
-		let list = Dependency().findPhotoshop()
+		let list = Dependency().findPhotoshops()
 		XCTAssertTrue(list.count != 0)
 	}
+
+    func testSetLayerString() throws {
+        PsdUtils.shared.setTextContent(psdIndexContentDict: [
+            "/Users/jin/Documents/TestData/Photoshop/test1.psd": [0: "newStr1", 2: "newStr1"],
+            "/Users/jin/Documents/TestData/Photoshop/test2.psd": [0: "newStr2", 1: "newStr2", 2: "newStr2"]
+        ])
+    }
 	
 
 }
