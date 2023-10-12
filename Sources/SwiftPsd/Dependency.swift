@@ -8,28 +8,27 @@
 import Foundation
 
 class Dependency {
+
 	
-//	init() {
-//		do {
-//			try Dependency().check()
-//		} catch DependencyError.NoPipInstalled {
-//			print("Error: Pip not installed.")
-//		} catch DependencyError.NoPsdToolInstalled {
-//			print("Error: Psd Tool not installed.")
-//		} catch {
-//			print("Error: \(error)")
-//		}
-//	}
-	
-	func check() throws {
+	func check() -> [String]  {
 		let pipInstalled = checkPip()
-		let psdToolInstalled = checkPsdTool()
+        let psdToolInstalled = checkPsdTool()
+        var errorList: [String] = []
+        let psList = findPhotoshops()
 		if pipInstalled == false {
-			throw DependencyError.NoPipInstalled
+			print("Error: Cannot find pip installed.")
+            errorList.append("Error: Cannot find pip installed.")
 		}
 		if psdToolInstalled == false {
-			throw DependencyError.NoPsdToolInstalled
+            print("Error: Cannot find psd tool python package installed.")
+            errorList.append("Error: Cannot find psd tool python package installed.")
 		}
+
+        if psList.count == 0 {
+            print("Warning: No Photoshop installed, some functions cannot be used.")
+            errorList.append("Warning: No Photoshop installed, some functions cannot be used.")
+         }
+        return errorList
 	}
 
 	private func checkPip() -> Bool {
@@ -39,7 +38,7 @@ class Dependency {
 		}
 		return true
 	}
-	
+
 	private func checkPsdTool() -> Bool {
 		let result = try! ScriptUtils.runShell(command: "pip list")
 		if result.contains("psd-tools") {
@@ -48,15 +47,10 @@ class Dependency {
 		return false
 	}
 	
-	func findPhotoshop() -> [String] {
+	func findPhotoshops() -> [String] {
 		let result = try! ScriptUtils.runShell(command: "mdfind -name 'Photoshop' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications")
 		let list = result.components(separatedBy: "\n").filter({$0.isEmpty == false && $0.components(separatedBy: "/").last!.contains("Photoshop") && $0.components(separatedBy: "/").last!.contains(".app")})
 		return list
 	}
 	
-}
-
-enum DependencyError: Error {
-	case NoPipInstalled
-	case NoPsdToolInstalled
 }

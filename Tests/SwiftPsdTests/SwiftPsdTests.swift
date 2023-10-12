@@ -16,13 +16,12 @@ final class PythonTests: XCTestCase {
 
 	
 	func testPsdTool() throws {
-
 		let psd_tools = Python.import("psd_tools")
 		let psdData = psd_tools.PSDImage.open("\(testPsd.path)")
 		XCTAssertEqual(psdData.name, "Root")
 	}
 	
-	func testOpenTextLayer() throws {
+	func testTextLayerProperty() throws {
 		let psd_tools = Python.import("psd_tools")
 		let psdData = psd_tools.PSDImage.open("\(testPsd.path)")
 		var index = 0
@@ -38,11 +37,24 @@ final class PythonTests: XCTestCase {
 		let result = PsdUtils.shared.getLayerData(psdFile: testPsd.path)
 		print(result)
 	}
+
+    func testDependencies() throws {
+        let dependency = Dependency()
+        let errorList = dependency.check()
+        XCTAssertEqual(errorList.count, 0)
+    }
 	
 	func testFindPhotoshop() throws {
-		let list = Dependency().findPhotoshop()
+		let list = Dependency().findPhotoshops()
 		XCTAssertTrue(list.count != 0)
 	}
+
+    func testSetLayerString() throws {
+        PsdUtils.shared.setTextContent(psdIndexContentDict: [
+            "/Users/jin/Documents/TestData/Photoshop/test1.psd": [0: "newStr1", 2: "newStr1"],
+            "/Users/jin/Documents/TestData/Photoshop/test2.psd": [0: "newStr2", 1: "newStr2", 2: "newStr2"]
+        ])
+    }
 	
 
 }

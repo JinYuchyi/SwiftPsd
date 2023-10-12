@@ -17,8 +17,11 @@ class ScriptUtils {
 		task.standardOutput = pipe
 		task.standardError = pipe
 		task.arguments = ["-c", command]
-		task.executableURL = URL(fileURLWithPath: "/bin/zsh")  
-		
+		task.executableURL = URL(fileURLWithPath: "/bin/zsh")
+        var environment = ProcessInfo.processInfo.environment
+        environment["PATH"] = "/opt/homebrew/Caskroom/miniforge/base/bin:/opt/homebrew/Caskroom/miniforge/base/condabin:/opt/local/bin:/opt/local/sbin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/opt/homwbrew/bin"
+        task.environment = environment
+
 		do {
 			try task.run()
 			task.waitUntilExit()
