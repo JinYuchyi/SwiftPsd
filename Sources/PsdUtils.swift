@@ -18,7 +18,12 @@ class PsdUtils {
 		let psdData = psd_tools.PSDImage.open("\(psdFile)")
 		var index = 0
 		for layer in psdData.descendants() {
-			let layerData = LayerData(index: index, type: LayerType(rawValue: String(layer.kind)!)!, name: String(layer.name)! , text: layer.kind == "type" ? String(layer.text)! : nil)
+			guard let layerKindStr = String(layer.kind),
+				let layerType = LayerType(rawValue: layerKindStr) else {
+				print("'\(layer.kind)' is not a identified layer type.")
+				return []
+			}
+			let layerData = LayerData(index: index, type: layerType , name: String(layer.name)! , text: layer.kind == "type" ? String(layer.text)! : nil)
 			result.append(layerData)
 			index += 1
 		}

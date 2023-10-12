@@ -16,9 +16,11 @@ struct LayerData {
 
 enum LayerType: String, CaseIterable {
 	case type
-	case smart
+	case smartobject
 	case shape
 	case pixel
 	case group
 	case artboard
+	case solidcolorfill
+	
 }
