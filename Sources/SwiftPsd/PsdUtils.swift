@@ -18,9 +18,50 @@ class PsdUtils {
 		let psdData = psd_tools.PSDImage.open("\(psdFile)")
 		var index = 0
 		for layer in psdData.descendants() {
-			let layerData = LayerData(index: index, type: LayerType(rawValue: String(layer.kind)!)!, name: String(layer.name)! , text: layer.kind == "type" ? String(layer.text)! : nil)
-			result.append(layerData)
-			index += 1
+            var _name = ""
+            var _text = ""
+
+            if  layer.kind == "type" {
+                if  (String(layer.name) != nil) {
+                    _name = String(layer.name)!
+                } else if (String(layer.engine_dict["Editor"]["Text"]) != nil) {
+                    _name = String(layer.engine_dict["Editor"]["Text"])!
+                } else {
+                    _name = layer.engine_dict["Editor"]["Text"].description.replacingOccurrences(of: "\'", with: "")
+                }
+
+                if  (String(layer.text) != nil) {
+                    _text = String(layer.text)!
+                } else if (String(layer.engine_dict["Editor"]["Text"]) != nil) {
+                    _text = String(layer.engine_dict["Editor"]["Text"])!
+                } else {
+                    _text = layer.engine_dict["Editor"]["Text"].description.replacingOccurrences(of: "\'", with: "")
+                }
+
+                let layerData = LayerData(index: index, type: LayerType(rawValue: String(layer.kind)!)!, name: _name, text: _text)
+                result.append(layerData)
+                index += 1
+                continue
+            }
+
+            else { // if layer.kind == "smartobject"
+                if  (String(layer.name) != nil) {
+                    _name = String(layer.name)!
+                }
+                else {
+                    let matchedStrList = layer.description.regex(pattern: "(\\\').+(\\\')")
+                    if matchedStrList.count > 0 {
+                        _name = matchedStrList[0].replacingOccurrences(of: "\\'", with: "'")
+                    }
+                }
+                let layerData = LayerData(index: index, type: LayerType(rawValue: String(layer.kind)!)!, name: _name, text: nil)
+                result.append(layerData)
+                index += 1
+                continue
+            }
+            
+
+
 		}
 		return result
 	}

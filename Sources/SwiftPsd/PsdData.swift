@@ -22,5 +22,6 @@ enum LayerType: String, CaseIterable {
 	case group
 	case artboard
 	case solidcolorfill
-	
+	case brightnesscontrast
+    case invert
 }
