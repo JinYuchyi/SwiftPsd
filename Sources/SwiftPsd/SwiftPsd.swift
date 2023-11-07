@@ -4,11 +4,11 @@
 // Swift Argument Parser
 // https://swiftpackageindex.com/apple/swift-argument-parser/documentation
 
-import ArgumentParser
-
-@main
-struct SwiftPsd: ParsableCommand {
-    mutating func run() throws {
-        print("Hello, world!")
-    }
-}
+//import ArgumentParser
+//
+//@main
+//struct SwiftPsd: ParsableCommand {
+//    mutating func run() throws {
+//        print("Hello, world!")
+//    }
+//}

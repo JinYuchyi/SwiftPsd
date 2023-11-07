@@ -8,11 +8,11 @@
 import Foundation
 import PythonKit
 
-class PsdUtils {
+public class PsdUtils {
 	private init(){}
-	static let shared = PsdUtils()
+	public static let shared = PsdUtils()
 
-	func getLayerData(psdFile: String) -> [LayerData] {
+	public func getLayerData(psdFile: String) -> [LayerData] {
 		var result: [LayerData] = []
 		let psd_tools = Python.import("psd_tools")
 		let psdData = psd_tools.PSDImage.open("\(psdFile)")
