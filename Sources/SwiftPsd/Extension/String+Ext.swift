@@ -18,7 +18,7 @@ extension String {
             let outputList = getSubStrings(ranges: ranges)
             return outputList
         } catch {
-            let targetStr = self.getRange(start: 0, end: 10) + "..."
+//            let targetStr = self.getRange(start: 0, end: 10) + "..."
             print(error)
         }
         return []

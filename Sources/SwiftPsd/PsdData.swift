@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct LayerData {
-	let index: Int
+public struct LayerData {
+	public let index: Int
 	let type: LayerType
 	let name: String
-	let text: String?
+	public let text: String?
 }
 
 enum LayerType: String, CaseIterable {

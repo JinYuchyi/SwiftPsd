@@ -34,17 +34,24 @@ final class PythonTests: XCTestCase {
 	}
 	
 	func testGetDocData() throws {
+        guard let folderURL = try? FileManager.default.url(for: .downloadsDirectory,
+                                                           in: .userDomainMask,
+                                                           appropriateFor: nil,
+                                                           create: false).appending(component: "SO_Source",
+                                                                                    directoryHint: .isDirectory) else {
+            fatalError("~/Downloads/SO_Source: No such directory")
+        }
         let fileList = [
-            "/Users/jin/Downloads/SO_Source/SO_Backups-4Z~L_F.psd",
-            "/Users/jin/Downloads/SO_Source/SO_BatteryLife-3Z~L_F.psd",
-            "/Users/jin/Downloads/SO_Source/SO_FamilySharing-4Z~D_F.psd",
-            "/Users/jin/Downloads/SO_Source/SO_MarkMessageUnread-3Z~L_F.psd",
-            "/Users/jin/Downloads/SO_Source/SO_MedicalID-1W~L_F.psd",
-            "/Users/jin/Downloads/SO_Source/SO_SharedPhotoLibrary-3Z~L_F.psd",
-            "/Users/jin/Downloads/SO_Source/SO_WeatherApp-3Z~D_F.psd"
+            "SO_Backups-4Z~L_F.psd",
+            "SO_BatteryLife-3Z~L_F.psd",
+            "SO_FamilySharing-4Z~D_F.psd",
+            "SO_MarkMessageUnread-3Z~L_F.psd",
+            "SO_MedicalID-1W~L_F.psd",
+            "SO_SharedPhotoLibrary-3Z~L_F.psd",
+            "SO_WeatherApp-3Z~D_F.psd"
         ]
-        for _file in fileList {
-            let result = PsdUtils.shared.getLayerData(psdFile: _file)
+        for file in fileList {
+            let result = PsdUtils.shared.getLayerData(psdFile: folderURL.appending(component: file).path(percentEncoded: false))
             print(result)
         }
 	}
