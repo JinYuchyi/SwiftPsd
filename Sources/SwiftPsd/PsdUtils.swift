@@ -9,7 +9,18 @@ import Foundation
 import PythonKit
 
 public class PsdUtils {
-	private init(){}
+	private init() {
+        // TODO: This is a temporary workaround for the following issue, which only affects archived(`release`) app.
+        // PythonKit/PythonLibrary.swift:59: Fatal error: 'try!' expression unexpectedly raised an error: Python library not found. Set the PYTHON_LIBRARY environment variable with the path to a Python library.
+        // private static var librarySearchPaths = ["", "/opt/homebrew/Frameworks/", "/usr/local/Frameworks/"]
+        do {
+            try PythonLibrary.loadLibrary()
+        } catch {
+            print("PsdUtils: \(error)")
+            let path = try? ScriptUtils.runShell(command: "type python3").dropFirst("python3 is ".count).trimmingCharacters(in: .newlines)
+            PythonLibrary.useLibrary(at: path)
+        }
+    }
 	public static let shared = PsdUtils()
 
 	public func getLayerData(psdFile: String) -> [LayerData] {

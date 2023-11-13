@@ -84,7 +84,7 @@
          <EnvironmentVariable
             key = "PYTHON_LIBRARY"
             value = "/usr/local/bin/python3"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>
