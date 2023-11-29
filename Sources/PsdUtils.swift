@@ -18,6 +18,7 @@ class PsdUtils {
 		let psdData = psd_tools.PSDImage.open("\(psdFile)")
 		var index = 0
 		for layer in psdData.descendants() {
+
 			guard let layerKindStr = String(layer.kind),
 				let layerType = LayerType(rawValue: layerKindStr) else {
 				print("'\(layer.kind)' is not a identified layer type.")
@@ -44,6 +45,7 @@ class PsdUtils {
 					print("Error: Cannot set text for layer \(index), it's not a text layer.")
 					return
 				}
+
 			}
 		}
 	}

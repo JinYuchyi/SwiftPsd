@@ -12,6 +12,7 @@ public struct LayerData {
 	let type: LayerType
 	let name: String
 	public let text: String?
+    public let bound: CGRect
 }
 
 enum LayerType: String, CaseIterable {
