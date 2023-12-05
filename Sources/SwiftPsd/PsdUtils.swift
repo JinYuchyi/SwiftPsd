@@ -52,7 +52,14 @@ public class PsdUtils {
             var _name = ""
             var _text = ""
 
+            let bboxTop = CGFloat(Int(layer.top) ?? 0)
+            let bboxBottom = CGFloat(Int(layer.bottom) ?? 0)
+            let bboxLeft = CGFloat(Int(layer.left) ?? 0)
+            let bboxRight = CGFloat(Int(layer.right) ?? 0)
+            let rect = CGRect(x: bboxLeft, y: bboxTop, width: bboxRight - bboxLeft, height: bboxBottom - bboxTop)
+
             if  layer.kind == "type" {
+
                 if  (String(layer.name) != nil) {
                     _name = String(layer.name)!
                 } else if (String(layer.engine_dict["Editor"]["Text"]) != nil) {
@@ -62,6 +69,7 @@ public class PsdUtils {
                 }
 
                 if  (String(layer.text) != nil) {
+
                     _text = String(layer.text)!
                 } else if (String(layer.engine_dict["Editor"]["Text"]) != nil) {
                     _text = String(layer.engine_dict["Editor"]["Text"])!
@@ -69,7 +77,8 @@ public class PsdUtils {
                     _text = layer.engine_dict["Editor"]["Text"].description.replacingOccurrences(of: "\'", with: "")
                 }
 
-                let layerData = LayerData(index: index, type: LayerType(rawValue: String(layer.kind)!)!, name: _name, text: _text)
+
+                let layerData = LayerData(index: index, type: LayerType(rawValue: String(layer.kind)!)!, name: _name, text: _text, bound: rect)
                 result.append(layerData)
                 index += 1
                 continue
@@ -85,7 +94,7 @@ public class PsdUtils {
                         _name = matchedStrList[0].replacingOccurrences(of: "\\'", with: "'")
                     }
                 }
-                let layerData = LayerData(index: index, type: LayerType(rawValue: String(layer.kind)!)!, name: _name, text: nil)
+                let layerData = LayerData(index: index, type: LayerType(rawValue: String(layer.kind)!)!, name: _name, text: nil, bound: rect)
                 result.append(layerData)
                 index += 1
                 continue
