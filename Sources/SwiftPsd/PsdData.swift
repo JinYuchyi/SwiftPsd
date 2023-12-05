@@ -13,6 +13,11 @@ public struct LayerData {
 	let name: String
 	public let text: String?
     public let bound: CGRect
+	
+	func findOverlapIndex(from targetLayers: [LayerData], overlapRate: CGFloat) -> [Int] {
+		let indexList = self.bound.findOverlapIndex(from: targetLayers.map({$0.bound}), overlapRate: overlapRate)
+		return indexList
+	}
 }
 
 enum LayerType: String, CaseIterable {
