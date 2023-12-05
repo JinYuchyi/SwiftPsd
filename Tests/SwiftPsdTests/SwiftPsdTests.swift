@@ -75,6 +75,19 @@ final class PythonTests: XCTestCase {
         ])
     }
 	
+	func testRectOverlap() throws {
+		let rect1 = CGRect(x: 270, y: 120, width: 100, height: 100)
+		let rectList = [
+		CGRect(x: 100, y: 20, width: 50, height: 50),
+		CGRect(x: 200, y: 100, width: 100, height: 100),
+		CGRect(x: 300, y: 150, width: 100, height: 100),
+		CGRect(x: 100, y: 130, width: 500, height: 500),
+		CGRect(x: 250, y: 100, width: 120, height: 120),
+		]
+		let list = rect1.findOverlapIndex(from: rectList, overlapRate: 0.5)
+		print(list)
+	}
+	
 
 }
 

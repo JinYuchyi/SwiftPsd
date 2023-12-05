@@ -99,9 +99,6 @@ public class PsdUtils {
                 index += 1
                 continue
             }
-            
-
-
 		}
 		return result
 	}
