@@ -9,11 +9,42 @@ import Foundation
 import PythonKit
 
 public class PsdUtils {
-	private init(){}
+    private var packages: [String]
+
+    private init() {
+        // TODO: This is a temporary workaround for the following issue, which only affects archived(`release`) app.
+        // PythonKit/PythonLibrary.swift:59: Fatal error: 'try!' expression unexpectedly raised an error: Python library not found. Set the PYTHON_LIBRARY environment variable with the path to a Python library.
+        // private static var librarySearchPaths = ["", "/opt/homebrew/Frameworks/", "/usr/local/Frameworks/"]
+        let pythonExecutables = try? ScriptUtils.runShell(command: "which -a python3")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .components(separatedBy: .newlines)
+
+        do {
+            try PythonLibrary.loadLibrary()
+        } catch {
+            print("PsdUtils: \(error)")
+            PythonLibrary.useLibrary(at: pythonExecutables?.first)
+        }
+
+        // Some modules may be installed using other versions of Python
+        // Fatal error: 'try!' expression unexpectedly raised an error: Python exception: No module named 'psd_tools'
+        packages = (pythonExecutables ?? []).reduce(into: [], { partialResult, pythonExecutable in
+            guard let lines = try? ScriptUtils.runShell(command: "\(pythonExecutable) -m site").components(separatedBy: .newlines) else { return }
+            let paths: [String] = lines.compactMap { line in
+                let path = line.trimmingCharacters(in: [" ", "'", ","])
+                guard path.hasSuffix("/site-packages") else { return nil }
+                return path
+            }
+            partialResult.append(contentsOf: paths)
+        })
+    }
 	public static let shared = PsdUtils()
 
 	public func getLayerData(psdFile: String) -> [LayerData] {
 		var result: [LayerData] = []
+        // Add possible module installation paths
+        let sys = Python.import("sys")
+        sys.path.extend(packages)
 		let psd_tools = Python.import("psd_tools")
 		let psdData = psd_tools.PSDImage.open("\(psdFile)")
 		var index = 0
@@ -72,8 +103,8 @@ public class PsdUtils {
 		return result
 	}
 
-	
-    func setTextContent(psdIndexContentDict: [String: [Int: String]]) {
+	@discardableResult
+    public func setTextContent(psdIndexContentDict: [String: [Int: String]]) -> Bool {
         var dictList: [String] = []
         for path in psdIndexContentDict.keys {
             if let layerStrDict = psdIndexContentDict[path] {
@@ -114,14 +145,13 @@ for (i = 0; i < fileSet.length; i++) {
             do {
                 try script.write(to: url, atomically: false, encoding: String.Encoding.utf8)
                 _ = try? ScriptUtils.runShell(command: "open -b \"com.adobe.Photoshop\" \"\(url.path)\"")
-
+                return true
             } catch {
                 print("Error: \(error)")
+                return false
             }
         } else {
-            // Fallback on earlier versions
+            return false
         }
-
-
 	}
 }
