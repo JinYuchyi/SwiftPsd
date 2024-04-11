@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct LayerData {
+public struct LayerData: Codable {
 	public let index: Int
 	let type: LayerType
 	let name: String
@@ -20,7 +20,7 @@ public struct LayerData {
 	}
 }
 
-enum LayerType: String, CaseIterable {
+enum LayerType: String, CaseIterable, Codable {
 	case type
 	case smartobject
 	case shape
