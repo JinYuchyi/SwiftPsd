@@ -22,7 +22,6 @@ final class PythonTests: XCTestCase {
 	}
 	
 	func testTextLayerProperty() throws {
-        Python.builtins
 		let psd_tools = Python.import("psd_tools")
 		let psdData = psd_tools.PSDImage.open("\(testPsd.path)")
 		var index = 0

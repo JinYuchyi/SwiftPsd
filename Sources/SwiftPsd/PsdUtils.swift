@@ -9,42 +9,23 @@ import Foundation
 import PythonKit
 
 public class PsdUtils {
-    private var packages: [String]
+    let dependency = Dependency()
+    public static let shared = PsdUtils()
 
     private init() {
-        // TODO: This is a temporary workaround for the following issue, which only affects archived(`release`) app.
-        // PythonKit/PythonLibrary.swift:59: Fatal error: 'try!' expression unexpectedly raised an error: Python library not found. Set the PYTHON_LIBRARY environment variable with the path to a Python library.
-        // private static var librarySearchPaths = ["", "/opt/homebrew/Frameworks/", "/usr/local/Frameworks/"]
-        let pythonExecutables = try? ScriptUtils.runShell(command: "which -a python3")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .components(separatedBy: .newlines)
-
         do {
             try PythonLibrary.loadLibrary()
         } catch {
-            print("PsdUtils: \(error)")
-            PythonLibrary.useLibrary(at: pythonExecutables?.first)
+            print("Load library error: \(error)")
+            PythonLibrary.useLibrary(at: dependency.python3)
         }
-
-        // Some modules may be installed using other versions of Python
-        // Fatal error: 'try!' expression unexpectedly raised an error: Python exception: No module named 'psd_tools'
-        packages = (pythonExecutables ?? []).reduce(into: [], { partialResult, pythonExecutable in
-            guard let lines = try? ScriptUtils.runShell(command: "\(pythonExecutable) -m site").components(separatedBy: .newlines) else { return }
-            let paths: [String] = lines.compactMap { line in
-                let path = line.trimmingCharacters(in: [" ", "'", ","])
-                guard path.hasSuffix("/site-packages") else { return nil }
-                return path
-            }
-            partialResult.append(contentsOf: paths)
-        })
     }
-	public static let shared = PsdUtils()
 
 	public func getLayerData(psdFile: String) -> [LayerData] {
 		var result: [LayerData] = []
         // Add possible module installation paths
         let sys = Python.import("sys")
-        sys.path.extend(packages)
+        sys.path.extend(dependency.packages)
 		let psd_tools = Python.import("psd_tools")
 		let psdData = psd_tools.PSDImage.open("\(psdFile)")
 		var index = 0
