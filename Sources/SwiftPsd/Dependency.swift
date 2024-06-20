@@ -20,6 +20,7 @@ class Dependency {
             print("Installing psd tools...")
             installPsdTool()
         }
+        loadPythonEnv()
     }
 
     private func getPython3() -> String? {
@@ -52,22 +53,28 @@ class Dependency {
         // TODO: This is a temporary workaround for the following issue, which only affects archived(`release`) app.
         // PythonKit/PythonLibrary.swift:59: Fatal error: 'try!' expression unexpectedly raised an error: Python library not found. Set the PYTHON_LIBRARY environment variable with the path to a Python library.
         // private static var librarySearchPaths = ["", "/opt/homebrew/Frameworks/", "/usr/local/Frameworks/"]
-        let pythonExecutables = try? ScriptUtils.runShell(command: "which -a python3")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .components(separatedBy: .newlines)
-
-        // Install psd_tools
+        var pythonExecutables = ["python3"]
+        let psdToolsExecutables = try? ScriptUtils.runShell(command: "which which psd-tools")
+        if psdToolsExecutables?.contains("not found") == true {
+            pythonExecutables = try! ScriptUtils.runShell(command: "which -a python3")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .components(separatedBy: .newlines)
+        } else {
+            pythonExecutables = psdToolsExecutables!.replacingOccurrences(of: "psd-tools", with: "python3")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                .components(separatedBy: .newlines)
+        }
 
         do {
             try PythonLibrary.loadLibrary()
         } catch {
             print("Load library error: \(error)")
-            PythonLibrary.useLibrary(at: pythonExecutables?.first)
+            PythonLibrary.useLibrary(at: pythonExecutables.first)
         }
 
         // Some modules may be installed using other versions of Python
         // Fatal error: 'try!' expression unexpectedly raised an error: Python exception: No module named 'psd_tools'
-        packages = (pythonExecutables ?? []).reduce(into: [], { partialResult, pythonExecutable in
+        packages = pythonExecutables.reduce(into: [], { partialResult, pythonExecutable in
             guard let lines = try? ScriptUtils.runShell(command: "\(pythonExecutable) -m site").components(separatedBy: .newlines) else { return }
             let paths: [String] = lines.compactMap { line in
                 let path = line.trimmingCharacters(in: [" ", "'", ","])
